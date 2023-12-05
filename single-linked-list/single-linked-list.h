@@ -91,6 +91,7 @@ class SingleLinkedList {
         // Возвращает ссылку на самого себя
         // Инкремент итератора, не указывающего на существующий элемент списка, приводит к неопределённому поведению
         BasicIterator& operator++() noexcept {
+            assert(node_ != nullptr);
             node_ = node_->next_node;
             return *this;
         }
@@ -109,6 +110,7 @@ class SingleLinkedList {
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] reference operator*() const noexcept {
+            assert(node_ != nullptr);
             return node_->value;
         }
 
@@ -116,6 +118,7 @@ class SingleLinkedList {
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] pointer operator->() const noexcept {
+            assert(node_ != nullptr);
             return &node_->value;
         }
 
@@ -187,20 +190,23 @@ public:
 
     void PopFront() noexcept {
         Node* deleting_elem = head_.next_node;
-        head_.next_node = deleting_elem->next_node;
-        delete deleting_elem;
-        --size_;
+        if (deleting_elem != nullptr) {
+            head_.next_node = deleting_elem->next_node;
+            delete deleting_elem;
+            --size_;
+        }
     }
 
     Iterator InsertAfter(ConstIterator pos, const Type& value) {
+        assert(pos.node_ != nullptr);
         Node* new_element = new Node(value, pos.node_->next_node);
         pos.node_->next_node = new_element;
         ++size_;
-
         return Iterator(pos.node_->next_node);
     }
 
     Iterator EraseAfter(ConstIterator pos) noexcept {
+        assert(pos.node_ != nullptr);
         Node* deleting_element = pos.node_->next_node;
         pos.node_->next_node = deleting_element->next_node;
         delete deleting_element;
